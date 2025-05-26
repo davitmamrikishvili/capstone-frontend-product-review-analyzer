@@ -3,7 +3,6 @@ import {
   Textarea,
   Button,
   Stack,
-  Title,
   Card,
   Group,
   Text,
@@ -13,9 +12,15 @@ import {
 } from "@mantine/core";
 import { IconAlertCircle, IconUpload } from "@tabler/icons-react";
 import { useReviewAnalysis } from "../hooks/useReviews";
-import { AspectSelector, DEFAULT_ASPECTS } from "./AspectSelector";
+import { AspectSelector } from "./AspectSelector";
 
-export function ReviewJSON() {
+import type { ReviewAnalysisResponse } from "../services/api";
+
+interface ReviewJSONProps {
+  onAnalysisComplete: (result: ReviewAnalysisResponse) => void;
+}
+
+export function ReviewJSON({ onAnalysisComplete }: ReviewJSONProps) {
   const [jsonInput, setJsonInput] = useState("");
   const [aspects, setAspects] = useState<string[]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -23,9 +28,12 @@ export function ReviewJSON() {
   const {
     mutate: analyzeReviews,
     isPending,
-    data,
     error,
-  } = useReviewAnalysis();
+  } = useReviewAnalysis({
+    onSuccess: (data) => {
+      onAnalysisComplete(data);
+    },
+  });
 
   const handleFileUpload = (file: File | null) => {
     if (!file) return;
@@ -35,14 +43,21 @@ export function ReviewJSON() {
       try {
         const content = e.target?.result as string;
         const json = JSON.parse(content);
-        // Assuming the JSON contains an array of reviews
-        if (Array.isArray(json)) {
-          setJsonInput(JSON.stringify(json, null, 2));
+
+        if (json.reviews && Array.isArray(json.reviews)) {
+          setJsonInput(JSON.stringify(json.reviews, null, 2));
         } else {
-          throw new Error("JSON must contain an array of reviews");
+          if (Array.isArray(json)) {
+            setJsonInput(JSON.stringify(json, null, 2));
+          } else {
+            throw new Error(
+              "JSON must contain a 'reviews' array or be an array of reviews"
+            );
+          }
         }
       } catch (err) {
         console.error("Error parsing JSON file:", err);
+        setFileName(null);
       }
     };
     reader.readAsText(file);
@@ -59,11 +74,16 @@ export function ReviewJSON() {
       }
 
       analyzeReviews({
-        prompt: reviews.join("\n"),
-        aspects: aspects.length > 0 ? aspects : DEFAULT_ASPECTS,
+        reviews,
+        aspects: aspects.length > 0 ? aspects : undefined,
       });
     } catch (err) {
       console.error("Error parsing JSON input:", err);
+      throw new Error(
+        `Failed to parse JSON: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
     }
   };
 
@@ -74,11 +94,12 @@ export function ReviewJSON() {
           <Textarea
             required
             label="JSON Reviews"
-            placeholder="Paste JSON array of reviews or upload a file..."
+            placeholder="Paste JSON array of reviews or upload a .json file..."
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
-            minRows={5}
-            autosize
+            minRows={10}
+            maxRows={10}
+            styles={{ input: { resize: "none" } }}
             disabled={isPending}
           />
 
@@ -137,29 +158,6 @@ export function ReviewJSON() {
             <Loader />
             <Text>Analyzing reviews...</Text>
           </Group>
-        </Card>
-      )}
-
-      {data && (
-        <Card withBorder>
-          <Stack spacing="md">
-            <Title order={3}>Analysis Results</Title>
-            {data.results.map(({ aspect, sentiment }) => (
-              <Card key={aspect} withBorder>
-                <Group position="apart">
-                  <Text weight={500} transform="capitalize">
-                    {aspect}
-                  </Text>
-                  <Text
-                    color={sentiment.label === "positive" ? "green" : "red"}
-                    weight={500}
-                  >
-                    {sentiment.label} ({(sentiment.score * 100).toFixed(1)}%)
-                  </Text>
-                </Group>
-              </Card>
-            ))}
-          </Stack>
         </Card>
       )}
     </Stack>

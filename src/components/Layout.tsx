@@ -1,37 +1,51 @@
-import { Tabs, Paper } from "@mantine/core";
-import { IconWorld, IconJson, IconTable } from "@tabler/icons-react";
+import { useState } from "react";
+import { Paper, Stack, Tabs } from "@mantine/core";
+import { IconWorld, IconJson } from "@tabler/icons-react";
 import { ReviewURL } from "./ReviewURL";
 import { ReviewJSON } from "./ReviewJSON";
-import { ReviewCSV } from "./ReviewCSV";
+import { AnalysisResultsWrapperList } from "./AnalysisResultsWrapperList";
+import { type ReviewAnalysisResponse } from "../services/api";
 
 export function Layout() {
+  const [analysisResults, setAnalysisResults] = useState<
+    ReviewAnalysisResponse[]
+  >([]);
+  const [activeTab, setActiveTab] = useState<string | null>("url");
+
+  const handleAnalysisComplete = (result: ReviewAnalysisResponse) => {
+    const resultWithTimestamp = {
+      ...result,
+      timestamp: new Date().toISOString(),
+    };
+    setAnalysisResults((prev) => [resultWithTimestamp, ...prev]); // Add new results to the top
+  };
+
   return (
-    <Paper shadow="xs" p="md">
-      <Tabs defaultValue="url">
-        <Tabs.List grow mb="md">
-          <Tabs.Tab value="url" icon={<IconWorld size="1rem" />}>
-            URL
-          </Tabs.Tab>
-          <Tabs.Tab value="json" icon={<IconJson size="1rem" />}>
-            JSON
-          </Tabs.Tab>
-          <Tabs.Tab value="csv" icon={<IconTable size="1rem" />}>
-            CSV
-          </Tabs.Tab>
-        </Tabs.List>
+    <Stack spacing="xl">
+      <Paper shadow="xs" p="md">
+        <Tabs value={activeTab} onTabChange={setActiveTab}>
+          <Tabs.List grow mb="md">
+            <Tabs.Tab value="url" icon={<IconWorld size="1rem" />}>
+              URL
+            </Tabs.Tab>
+            <Tabs.Tab value="json" icon={<IconJson size="1rem" />}>
+              JSON
+            </Tabs.Tab>
+          </Tabs.List>
 
-        <Tabs.Panel value="url">
-          <ReviewURL />
-        </Tabs.Panel>
+          <Tabs.Panel value="url">
+            <ReviewURL onAnalysisComplete={handleAnalysisComplete} />
+          </Tabs.Panel>
 
-        <Tabs.Panel value="json">
-          <ReviewJSON />
-        </Tabs.Panel>
+          <Tabs.Panel value="json">
+            <ReviewJSON onAnalysisComplete={handleAnalysisComplete} />
+          </Tabs.Panel>
+        </Tabs>
+      </Paper>
 
-        <Tabs.Panel value="csv">
-          <ReviewCSV />
-        </Tabs.Panel>
-      </Tabs>
-    </Paper>
+      {analysisResults.length > 0 && (
+        <AnalysisResultsWrapperList results={analysisResults} />
+      )}
+    </Stack>
   );
 }

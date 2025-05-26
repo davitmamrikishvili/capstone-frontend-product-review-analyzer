@@ -9,27 +9,50 @@ export const api = axios.create({
   },
 });
 
-export interface ReviewAnalysisRequest {
-  prompt: string;
-  aspects: string[];
+interface GeneralSentimentResult {
+  review: string;
+  label: string;
+  score: number;
+}
+
+interface AspectSentimentResult {
+  review: string;
+  details: Array<{
+    aspect: string;
+    label: string;
+    score: number;
+  }>;
 }
 
 export interface ReviewAnalysisResponse {
-  results: Array<{
-    aspect: string;
-    sentiment: {
-      label: string;
-      score: number;
-    };
-  }>;
+  status: string;
+  analysis_type: "general" | "aspect-based";
+  aspects_analyzed?: string[];
+  timestamp: string;
+  results: Array<GeneralSentimentResult | AspectSentimentResult>;
+}
+
+export interface ReviewAnalysisRequest {
+  reviews: string[];
+  aspects?: string[];
 }
 
 export const reviewService = {
   async analyzeReview(
     data: ReviewAnalysisRequest
   ): Promise<ReviewAnalysisResponse> {
-    const response = await api.post("/analyze", data);
-    return response.data;
+    const { reviews, aspects } = data;
+    const response = await api.post(
+      "/analyze/",
+      { reviews },
+      {
+        params: { aspects },
+      }
+    );
+    return {
+      ...response.data,
+      timestamp: new Date().toISOString(),
+    };
   },
 
   async scrapeReviews(url: string, count: number, order: string) {

@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { reviewService, type ReviewAnalysisRequest } from "../services/api";
+import { reviewService, type ReviewAnalysisRequest, type ReviewAnalysisResponse } from "../services/api";
 
-export const useReviewAnalysis = () => {
-  return useMutation({
-    mutationFn: (data: ReviewAnalysisRequest) =>
-      reviewService.analyzeReview(data),
+export function useReviewAnalysis({ onSuccess }: { onSuccess: (data: ReviewAnalysisResponse) => void; }) {
+  return useMutation<ReviewAnalysisResponse, Error, ReviewAnalysisRequest>({
+    mutationFn: reviewService.analyzeReview,
+    onSuccess,
   });
 };
 

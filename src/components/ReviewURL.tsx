@@ -3,9 +3,7 @@ import {
   TextInput,
   Button,
   Stack,
-  Title,
   Card,
-  Center,
   Group,
   Text,
   Alert,
@@ -15,7 +13,9 @@ import {
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { useReviewScraping, useReviewAnalysis } from "../hooks/useReviews";
-import { AspectSelector, DEFAULT_ASPECTS } from "./AspectSelector";
+import { AspectSelector } from "./AspectSelector";
+
+import type { ReviewAnalysisResponse } from "../services/api";
 
 const ORDER_OPTIONS = [
   { value: "relevancy", label: "Most Relevant" },
@@ -25,7 +25,11 @@ const ORDER_OPTIONS = [
   { value: "rating-asc", label: "Lowest Rating" },
 ];
 
-export function ReviewURL() {
+interface ReviewURLProps {
+  onAnalysisComplete: (result: ReviewAnalysisResponse) => void;
+}
+
+export function ReviewURL({ onAnalysisComplete }: ReviewURLProps) {
   const [url, setUrl] = useState("");
   const [order, setOrder] = useState("relevancy");
   const [aspects, setAspects] = useState<string[]>([]);
@@ -40,9 +44,10 @@ export function ReviewURL() {
   const {
     mutate: analyzeReviews,
     isPending: isAnalysisPending,
-    data: analysisData,
     error: analysisError,
-  } = useReviewAnalysis();
+  } = useReviewAnalysis({
+    onSuccess: onAnalysisComplete,
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +58,8 @@ export function ReviewURL() {
       {
         onSuccess: (reviews) => {
           analyzeReviews({
-            prompt: reviews.join("\n"),
-            aspects: aspects.length > 0 ? aspects : DEFAULT_ASPECTS,
+            reviews,
+            aspects: aspects.length > 0 ? aspects : undefined,
           });
         },
       }
@@ -133,29 +138,6 @@ export function ReviewURL() {
             <Loader />
             <Text>Analyzing reviews...</Text>
           </Group>
-        </Card>
-      )}
-
-      {analysisData && (
-        <Card withBorder>
-          <Stack spacing="md">
-            <Title order={3}>Analysis Results</Title>
-            {analysisData.results.map(({ aspect, sentiment }) => (
-              <Card key={aspect} withBorder>
-                <Group position="apart">
-                  <Text weight={500} transform="capitalize">
-                    {aspect}
-                  </Text>
-                  <Text
-                    color={sentiment.label === "positive" ? "green" : "red"}
-                    weight={500}
-                  >
-                    {sentiment.label} ({(sentiment.score * 100).toFixed(1)}%)
-                  </Text>
-                </Group>
-              </Card>
-            ))}
-          </Stack>
         </Card>
       )}
     </Stack>
