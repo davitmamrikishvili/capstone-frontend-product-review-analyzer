@@ -23,6 +23,7 @@ export function AnalysisResultsWrapperList({
           <AnalysisResultsWrapper
             results={[result]}
             timestamp={new Date(result.timestamp) || new Date()}
+            summary={result.summary}
           />
         </Paper>
       ))}

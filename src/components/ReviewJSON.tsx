@@ -27,8 +27,8 @@ export function ReviewJSON({ onAnalysisComplete }: ReviewJSONProps) {
   const resetRef = useRef<() => void>(null);
   const {
     mutate: analyzeReviews,
-    isPending,
-    error,
+    isPending: isAnalysisPending,
+    error: analysisError,
   } = useReviewAnalysis({
     onSuccess: (data) => {
       onAnalysisComplete(data);
@@ -100,13 +100,13 @@ export function ReviewJSON({ onAnalysisComplete }: ReviewJSONProps) {
             minRows={10}
             maxRows={10}
             styles={{ input: { resize: "none" } }}
-            disabled={isPending}
+            disabled={isAnalysisPending}
           />
 
           <AspectSelector
             value={aspects}
             onChange={setAspects}
-            disabled={isPending}
+            disabled={isAnalysisPending}
           />
 
           <Group position="apart" align="center">
@@ -124,7 +124,7 @@ export function ReviewJSON({ onAnalysisComplete }: ReviewJSONProps) {
                     {...props}
                     variant="light"
                     leftIcon={<IconUpload size="1rem" />}
-                    disabled={isPending}
+                    disabled={isAnalysisPending}
                     size="lg"
                   >
                     Upload JSON
@@ -138,21 +138,21 @@ export function ReviewJSON({ onAnalysisComplete }: ReviewJSONProps) {
               )}
             </Group>
 
-            <Button type="submit" loading={isPending} size="lg">
+            <Button type="submit" loading={isAnalysisPending} size="lg">
               Analyze
             </Button>
           </Group>
         </Stack>
       </form>
 
-      {error && (
+      {analysisError && (
         <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red">
           Failed to analyze reviews. Please check your JSON format and try
           again.
         </Alert>
       )}
 
-      {isPending && (
+      {isAnalysisPending && (
         <Card withBorder>
           <Group position="center">
             <Loader />

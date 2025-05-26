@@ -29,6 +29,7 @@ export interface ReviewAnalysisResponse {
   analysis_type: "general" | "aspect-based";
   aspects_analyzed?: string[];
   timestamp: string;
+  summary?: string;
   results: Array<GeneralSentimentResult | AspectSentimentResult>;
 }
 
@@ -42,26 +43,27 @@ export const reviewService = {
     data: ReviewAnalysisRequest
   ): Promise<ReviewAnalysisResponse> {
     const { reviews, aspects } = data;
+
+    const params = new URLSearchParams();
+    aspects?.forEach((aspect) => params.append("aspects", aspect));
+
     const response = await api.post(
       "/analyze/",
       { reviews },
       {
-        params: { aspects },
+        params,
       }
     );
+    const summary = await api.post("/summarize", { reviews });
     return {
       ...response.data,
+      ...summary.data,
       timestamp: new Date().toISOString(),
     };
   },
 
   async scrapeReviews(url: string, count: number, order: string) {
     const response = await api.post("/scrape", { url, count, order });
-    return response.data;
-  },
-
-  async summarizeReviews(reviews: string[]) {
-    const response = await api.post("/summarize", { reviews });
     return response.data;
   },
 };

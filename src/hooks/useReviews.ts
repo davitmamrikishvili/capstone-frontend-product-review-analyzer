@@ -21,9 +21,3 @@ export const useReviewScraping = () => {
     }) => reviewService.scrapeReviews(url, count, order),
   });
 };
-
-export const useReviewSummarization = () => {
-  return useMutation({
-    mutationFn: (reviews: string[]) => reviewService.summarizeReviews(reviews),
-  });
-};

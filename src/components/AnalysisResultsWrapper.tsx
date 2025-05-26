@@ -3,23 +3,26 @@ import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { useState } from "react";
 import { type ReviewAnalysisResponse } from "../services/api";
 import { AnalysisResult } from "./AnalysisResult";
+import { SummaryResult } from "./SummaryResult";
 
 interface AnalysisResultsWrapperProps {
   results: ReviewAnalysisResponse[];
   timestamp: Date;
+  summary?: string;
 }
 
 export function AnalysisResultsWrapper({
   results,
   timestamp,
+  summary,
 }: AnalysisResultsWrapperProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   if (results.length === 0) return null;
 
   return (
-    <>
-      <Group position="apart" mb="md">
+    <Stack spacing="md">
+      <Group position="apart">
         <Title order={3}>{timestamp.toLocaleString()} - Analysis Results</Title>
         <ActionIcon
           onClick={() => setIsExpanded(!isExpanded)}
@@ -34,6 +37,9 @@ export function AnalysisResultsWrapper({
           )}
         </ActionIcon>
       </Group>
+
+      {summary && <SummaryResult summary={summary} />}
+
       {isExpanded && (
         <Box
           sx={{
@@ -41,7 +47,6 @@ export function AnalysisResultsWrapper({
             maxHeight: "80vh",
             height: "60vh",
             overflowY: "auto",
-            resize: "vertical",
             transition: "height 0.2s ease",
           }}
         >
@@ -62,6 +67,6 @@ export function AnalysisResultsWrapper({
           ))}
         </Box>
       )}
-    </>
+    </Stack>
   );
 }

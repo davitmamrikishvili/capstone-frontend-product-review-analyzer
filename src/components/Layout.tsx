@@ -17,7 +17,7 @@ export function Layout() {
       ...result,
       timestamp: new Date().toISOString(),
     };
-    setAnalysisResults((prev) => [resultWithTimestamp, ...prev]); // Add new results to the top
+    setAnalysisResults((prev) => [resultWithTimestamp, ...prev]);
   };
 
   return (
