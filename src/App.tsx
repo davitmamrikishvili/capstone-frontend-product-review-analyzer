@@ -13,7 +13,7 @@ function App() {
         withGlobalStyles
         withNormalizeCSS
         theme={{
-          colorScheme: "light",
+          colorScheme: "dark",
           fontFamily: "system-ui, -apple-system, sans-serif",
           primaryColor: "blue",
           components: {
@@ -21,6 +21,16 @@ function App() {
               defaultProps: {
                 size: "lg",
                 px: "md",
+              },
+            },
+            Paper: {
+              defaultProps: {
+                withBorder: true,
+              },
+              styles: {
+                root: {
+                  borderColor: "#2C2E33",
+                },
               },
             },
           },

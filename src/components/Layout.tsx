@@ -1,36 +1,35 @@
-import { Tabs, Text, Paper } from "@mantine/core";
-import { IconRobot, IconSpider, IconList } from "@tabler/icons-react";
-import { ReviewAnalyzer } from "./ReviewAnalyzer";
-import { ReviewScraper } from "./ReviewScraper";
+import { Tabs, Paper } from "@mantine/core";
+import { IconWorld, IconJson, IconTable } from "@tabler/icons-react";
+import { ReviewURL } from "./ReviewURL";
+import { ReviewJSON } from "./ReviewJSON";
+import { ReviewCSV } from "./ReviewCSV";
 
 export function Layout() {
   return (
     <Paper shadow="xs" p="md">
-      <Tabs defaultValue="analyze">
+      <Tabs defaultValue="url">
         <Tabs.List grow mb="md">
-          <Tabs.Tab value="analyze" icon={<IconRobot size="1rem" />}>
-            Analyze Reviews
+          <Tabs.Tab value="url" icon={<IconWorld size="1rem" />}>
+            URL
           </Tabs.Tab>
-          <Tabs.Tab value="scrape" icon={<IconSpider size="1rem" />}>
-            Scrape Reviews
+          <Tabs.Tab value="json" icon={<IconJson size="1rem" />}>
+            JSON
           </Tabs.Tab>
-          <Tabs.Tab value="summarize" icon={<IconList size="1rem" />} disabled>
-            Summarize Reviews
+          <Tabs.Tab value="csv" icon={<IconTable size="1rem" />}>
+            CSV
           </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel value="analyze">
-          <ReviewAnalyzer />
+        <Tabs.Panel value="url">
+          <ReviewURL />
         </Tabs.Panel>
 
-        <Tabs.Panel value="scrape">
-          <ReviewScraper />
+        <Tabs.Panel value="json">
+          <ReviewJSON />
         </Tabs.Panel>
 
-        <Tabs.Panel value="summarize">
-          <Text color="blue" weight={500}>
-            Coming Soon!
-          </Text>
+        <Tabs.Panel value="csv">
+          <ReviewCSV />
         </Tabs.Panel>
       </Tabs>
     </Paper>
