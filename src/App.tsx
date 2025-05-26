@@ -38,6 +38,9 @@ function App() {
       >
         <Container>
           <Layout />
+          <footer style={{ marginTop: "2rem", textAlign: "center" }}>
+            <p>Made by Davit Mamrikishvili</p>
+          </footer>
         </Container>
       </MantineProvider>
     </QueryClientProvider>
