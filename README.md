@@ -53,10 +53,20 @@ A modern React application for analyzing product reviews using sentiment analysi
 ## Usage
 
 1. Enter a review text in the input field
-2. Select aspects to analyze (or use default aspects)
-3. Click "Analyze Review" to get sentiment analysis results
+2. Select aspects to analyze (or leave blank to use general sentiment analysis)
+3. Click "Analyze" to get sentiment analysis results
 4. View the results with sentiment scores for each aspect
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Authors
+
+- Davit Mamrikishvili
+
+## Acknowledgments
+
+- [DeBERTa-v3](https://huggingface.co/yangheng/deberta-v3-base-absa-v1.1) for aspect-based sentiment analysis
+- [DistilBERT](https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english) for general sentiment analysis
+- [BART](https://huggingface.co/facebook/bart-large-cnn) for text summarization
