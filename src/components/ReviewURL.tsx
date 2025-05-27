@@ -57,6 +57,7 @@ export function ReviewURL({ onAnalysisComplete }: ReviewURLProps) {
       { url, count: reviewCount, order },
       {
         onSuccess: (reviews) => {
+          reviews = reviews.reviews;
           analyzeReviews({
             reviews,
             aspects: aspects.length > 0 ? aspects : undefined,

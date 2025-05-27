@@ -63,7 +63,10 @@ export const reviewService = {
   },
 
   async scrapeReviews(url: string, count: number, order: string) {
-    const response = await api.post("/scrape", { url, count, order });
+    const params = new URLSearchParams();
+    params.append("count", count.toString());
+    params.append("order", order);
+    const response = await api.post("/scrape", { url }, { params });
     return response.data;
   },
 };
