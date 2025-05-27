@@ -24,7 +24,7 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
       case "NEGATIVE":
         return "red";
       default:
-        return "gray";
+        return "yellow";
     }
   };
 
@@ -58,7 +58,7 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
                   Overall Sentiment
                 </Text>
               </Group>
-              <Group spacing="xs" sx={{ flexGrow: 1, maxWidth: '60%' }}>
+              <Group spacing="xs" sx={{ flexGrow: 1, maxWidth: "60%" }}>
                 <Progress
                   value={result.score * 100}
                   color={getSentimentColor(result.label)}
@@ -66,7 +66,11 @@ export function AnalysisResult({ result }: AnalysisResultProps) {
                   radius="xl"
                   sx={{ flexGrow: 1 }}
                 />
-                <Text weight={700} color={getSentimentColor(result.label)} w={60}>
+                <Text
+                  weight={700}
+                  color={getSentimentColor(result.label)}
+                  w={60}
+                >
                   {`${(result.score * 100).toFixed(1)}%`}
                 </Text>
               </Group>
